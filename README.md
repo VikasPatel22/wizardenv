@@ -1543,7 +1543,7 @@ Go to `https://pypi.org/manage/account/publishing/` and fill in:
 
 ### Step 5: Create a release
 
-Go to `https://github.com/VIkasPatel22/wizardai-sdk/releases/new`, create tag `v1.0.1`, and publish. The workflow runs automatically.
+Go to `https://github.com/VIkasPatel22/wizardai-sdk/releases/new`, create tag `v1.0.5`, and publish. The workflow runs automatically.
 
 ### Step 6: Install from PyPI
 
