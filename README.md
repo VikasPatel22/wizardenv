@@ -1,1192 +1,1167 @@
-# 🧙 WizardEnv — Complete Documentation
+# WizardAI SDK — Documentation
 
-[![Version](https://img.shields.io/badge/version-2.1.3-blue?style=flat-square)](https://pypi.org/project/wizardai-sdk/)
-[![Python](https://img.shields.io/badge/python-3.9%2B-brightgreen?style=flat-square&logo=python)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-orange?style=flat-square)](LICENSE)
-[![PyPI](https://img.shields.io/badge/pip_install-wizardai--sdk-purple?style=flat-square)](https://pypi.org/project/wizardai-sdk/)
+> **Version:** v1.0.0 · **License:** MIT · **API:** Sagittarius Labs
 
-> **A powerful, all-in-one Python SDK for AI integration** — conversational AI, computer vision, speech I/O, memory management, and a plugin system in a single file. Powered by the **Sagittarius Labs API** at [https://sagittarius-labs.pages.dev/](https://sagittarius-labs.pages.dev/).
+A powerful, all-in-one Python SDK for AI integration using the Sagittarius Labs API. Combines conversational AI, computer vision, speech I/O, memory management, and a flexible plugin system into a single importable file.
+
+**Features:** Conversational AI · Computer Vision · Speech I/O · Memory Management · Plugin System
 
 ---
 
 ## Table of Contents
 
-1. [Installation](#1-installation)
-2. [Getting Your API Key](#2-getting-your-api-key)
-3. [Quick Start](#3-quick-start)
-4. [Architecture Overview](#4-architecture-overview)
-5. [WizardAI Core](#5-wizardai-core)
-6. [AIClient](#6-aiclient)
-7. [ConversationAgent](#7-conversationagent)
-8. [MemoryManager](#8-memorymanager)
-9. [VisionModule](#9-visionmodule)
-10. [SpeechModule](#10-speechmodule)
-11. [Plugin System](#11-plugin-system)
-12. [Utilities](#12-utilities)
-13. [Exceptions & Error Handling](#13-exceptions--error-handling)
-14. [Environment Variables](#14-environment-variables)
-15. [Configuration Reference](#15-configuration-reference)
-16. [Advanced Usage](#16-advanced-usage)
-17. [Publishing to PyPI](#17-publishing-to-pypi)
-18. [Contributing](#18-contributing)
-19. [License](#19-license)
+1. [Installation](#installation)
+2. [Quick Start](#quick-start)
+3. [WizardAI (Orchestrator)](#wizardai)
+4. [AIClient](#aiclient)
+5. [AIResponse](#airesponse)
+6. [ConversationAgent](#conversationagent)
+7. [Pattern](#pattern)
+8. [MemoryManager](#memorymanager)
+9. [Message](#message)
+10. [PluginBase](#pluginbase)
+11. [PluginManager](#pluginmanager)
+12. [Plugin Examples](#plugin-examples)
+13. [VisionModule](#visionmodule)
+14. [SpeechModule](#speechmodule)
+15. [Logger](#logger)
+16. [FileHelper](#filehelper)
+17. [DataSerializer](#dataserializer)
+18. [RateLimiter](#ratelimiter)
+19. [Exceptions](#exceptions)
+20. [Constants & Metadata](#constants--metadata)
+21. [Full Examples](#full-examples)
 
 ---
 
-## 1. Installation
+## Installation
 
-### Minimal (core AI only)
+WizardAI is distributed as a single Python file hosted by Sagittarius Labs. Install it using one of the methods below — the file is placed directly into your Python `site-packages` directory so you can `import wizardai` from anywhere.
 
-```bash
-pip install wizardai-sdk
+> **Install path:** `C:\Program Files\Python311\Lib\site-packages\wizardai.py`
+
+### CMD (Admin)
+
+```bat
+:: Run Command Prompt as Administrator
+:: Downloads wizardai.py from Sagittarius Labs and installs it
+
+curl -L -o "%TEMP%\wizardai.py" ^
+  "https://sagittarius1.netlify.app/infrastructure/downloads/scripts/site-packages/wizardai.py"
+
+copy /Y "%TEMP%\wizardai.py" ^
+  "C:\Program Files\Python311\Lib\site-packages\wizardai.py"
+
+:: Verify installation
+python -c "import wizardai; print(wizardai.__version__)"
 ```
 
-The only required third-party dependency is `requests`.
+### PowerShell (Admin)
 
-### With optional features
+```powershell
+# Run PowerShell as Administrator
 
-```bash
-# Computer vision (OpenCV)
-pip install "wizardai-sdk[vision]"
+$url  = "https://sagittarius1.netlify.app/infrastructure/downloads/scripts/site-packages/wizardai.py"
+$dest = "C:\Program Files\Python311\Lib\site-packages\wizardai.py"
 
-# Speech recognition + TTS
-pip install "wizardai-sdk[speech]"
+Invoke-WebRequest -Uri $url -OutFile $dest
 
-# High-accuracy offline speech (OpenAI Whisper)
-pip install "wizardai-sdk[whisper]"
-
-# Everything at once
-pip install "wizardai-sdk[full]"
-
-# Developer tools
-pip install "wizardai-sdk[dev]"
+# Verify
+python -c "import wizardai; print('Installed:', wizardai.__version__)"
 ```
 
-### From source
+### PowerShell (Legacy WebClient)
 
-```bash
-git clone https://github.com/YourUsername/wizardai-sdk.git
-cd wizardai-sdk
-pip install -e ".[full]"
+```powershell
+# PowerShell (Administrator) — legacy WebClient method
+
+$wc   = New-Object System.Net.WebClient
+$url  = "https://sagittarius1.netlify.app/infrastructure/downloads/scripts/site-packages/wizardai.py"
+$dest = "C:\Program Files\Python311\Lib\site-packages\wizardai.py"
+
+$wc.DownloadFile($url, $dest)
+
+# Confirm
+Get-Item $dest
+python -c "import wizardai; print(wizardai.__version__)"
 ```
 
-### System dependencies for speech (Linux/macOS)
+### Batch Script
 
-```bash
-# Linux
-sudo apt-get install portaudio19-dev python3-dev
+```bat
+@echo off
+:: Save this file as install_wizardai.bat
+:: Right-click → Run as Administrator
 
-# macOS
-brew install portaudio
+setlocal
+set URL=https://sagittarius1.netlify.app/infrastructure/downloads/scripts/site-packages/wizardai.py
+set DEST=C:\Program Files\Python311\Lib\site-packages\wizardai.py
+
+echo Downloading WizardAI SDK...
+curl -L -o "%TEMP%\wizardai.py" "%URL%"
+
+if %errorlevel% neq 0 (
+    echo Download failed. Check internet connection.
+    pause
+    exit /b 1
+)
+
+echo Installing to site-packages...
+copy /Y "%TEMP%\wizardai.py" "%DEST%"
+
+echo Verifying...
+python -c "import wizardai; print('WizardAI', wizardai.__version__, 'installed OK')"
+
+pause
 ```
 
----
+### curl.exe (Direct)
 
-## 2. Getting Your API Key
+```bat
+:: Using curl.exe directly (Windows 10 1803+ has curl built-in)
+:: Run CMD or PowerShell as Administrator
 
-WizardAI is powered by the **Sagittarius Labs API**.
+curl.exe --location --progress-bar ^
+  --output "C:\Program Files\Python311\Lib\site-packages\wizardai.py" ^
+  "https://sagittarius1.netlify.app/infrastructure/downloads/scripts/site-packages/wizardai.py"
 
-1. Visit [https://sagittarius-labs.pages.dev/](https://sagittarius-labs.pages.dev/)
-2. Create a free account and generate your API key
-3. Use the key as shown below
-
-> If your API key is wrong or missing, WizardAI will print a message directing you back to [https://sagittarius-labs.pages.dev/](https://sagittarius-labs.pages.dev/) to get or verify it.
-
-### Setting the key via environment variable (recommended)
-
-```bash
-export WIZARDAI_API_KEY="your_key_here"
+:: Test the import
+python.exe -c "import wizardai; print(wizardai.__version__)"
 ```
 
-Or in a `.env` file with `python-dotenv`:
+> ⚠️ **Administrator Required:** Writing to `C:\Program Files\` requires elevated privileges. Always run your terminal as Administrator when installing.
 
-```
-WIZARDAI_API_KEY=your_key_here
-```
+### Optional Dependencies
+
+WizardAI has zero required third-party dependencies at import time. Extra features need:
+
+| Package | Required For | Install Command |
+|---|---|---|
+| `requests` | AIClient HTTP calls (core feature) | `pip install requests` |
+| `opencv-python` | VisionModule — camera & image processing | `pip install opencv-python` |
+| `SpeechRecognition` | SpeechModule STT (listen) | `pip install SpeechRecognition` |
+| `pyttsx3` | SpeechModule TTS (pyttsx3 backend) | `pip install pyttsx3` |
+| `gtts` | SpeechModule TTS (gTTS backend) | `pip install gtts` |
+| `pygame` | Audio playback for gTTS / ElevenLabs | `pip install pygame` |
+| `openai-whisper` | SpeechModule Whisper STT backend | `pip install openai-whisper` |
+| `numpy` | Whisper STT audio array processing | `pip install numpy` |
+
+### API Key
+
+Get your free API key at [sagittarius-labs.pages.dev](https://sagittarius-labs.pages.dev). You can provide it in three ways:
 
 ```python
-from dotenv import load_dotenv
-load_dotenv()
+# Option 1: Pass directly
+wiz = wizardai.WizardAI(api_key="YOUR_API_KEY")
 
-import wizardai
-wiz = wizardai.WizardAI()   # key is read from env automatically
+# Option 2: Environment variable (recommended)
+# CMD: set WIZARDAI_API_KEY=your_key_here
+# PS:  $env:WIZARDAI_API_KEY = "your_key_here"
+wiz = wizardai.WizardAI()  # picks up env var automatically
+
+# Option 3: Set at runtime
+wiz.set_api_key("YOUR_API_KEY")
 ```
 
 ---
 
-## 3. Quick Start
-
-### Minimal example
+## Quick Start
 
 ```python
 import wizardai
 
-wiz = wizardai.WizardAI(api_key="YOUR_KEY")
+# 1. Create and start a session
+wiz = wizardai.WizardAI(api_key="YOUR_API_KEY")
 wiz.start()
 
-# Rule-based response (no API call)
-wiz.agent.add_pattern("hello", "Hello from WizardAI!")
-print(wiz.chat("hello"))              # → "Hello from WizardAI!"
-
-# Direct LLM call
+# 2. Direct LLM call
 print(wiz.ask("What is the speed of light?"))
 
-wiz.stop()
-```
+# 3. Add a pattern rule (no API call)
+wiz.agent.add_pattern("hello", "Hello from WizardAI!")
+print(wiz.chat("hello"))
 
-### Recommended: context manager
-
-```python
-with wizardai.WizardAI(api_key="YOUR_KEY") as wiz:
-    print(wiz.ask("Tell me a joke."))
-```
-
-### Full-featured example
-
-```python
-wiz = wizardai.WizardAI(
-    api_key="YOUR_KEY",
-    enable_vision=True,
-    enable_speech=True,
-    stt_backend="google",
-    tts_backend="pyttsx3",
-    memory_path="session.json",
-    system_prompt="You are a helpful assistant.",
-)
-wiz.start()
-
-# Multimodal: capture + describe
-frame   = wiz.capture()
-b64     = wiz.vision.encode_to_base64(frame)
-caption = wiz.ask("Describe this image.", image_b64=b64)
-wiz.say(caption)
-
-# Streaming response
-for chunk in wiz.ai.chat_stream([{"role": "user", "content": "Write a poem"}]):
+# 4. Streaming response
+for chunk in wiz.ai.chat_stream([{"role":"user","content":"Write a haiku"}]):
     print(chunk, end="", flush=True)
 
-# Long-term memory
+# 5. Long-term memory
 wiz.remember("user_name", "Alice")
-print(wiz.recall("user_name"))        # → "Alice"
+print(wiz.recall("user_name"))  # → Alice
 
+# 6. Stop session
 wiz.stop()
-```
 
-### Interactive terminal REPL
-
-```python
-wiz = wizardai.WizardAI(api_key="YOUR_KEY")
-wiz.start()
-wiz.run_repl()                        # keyboard input
-wiz.run_repl(voice_mode=True)         # microphone input
+# Or use as a context manager
+with wizardai.WizardAI(api_key="YOUR_API_KEY") as wiz:
+    print(wiz.ask("Hello!"))
 ```
 
 ---
 
-## 4. Architecture Overview
+## WizardAI
 
-```
-wizardai.py  (single file)
-│
-├── WizardAI               ← Top-level orchestrator
-│     ├── AIClient         ← Sagittarius Labs LLM calls
-│     ├── ConversationAgent← AIML-style pattern matching
-│     ├── MemoryManager    ← Short + long-term memory
-│     ├── VisionModule     ← Camera / OpenCV (optional)
-│     ├── SpeechModule     ← STT + TTS (optional)
-│     ├── PluginManager    ← Extensible skill plugins
-│     ├── FileHelper       ← File I/O utilities
-│     └── DataSerializer   ← JSON/Pickle persistence
-```
+**Class** — All-in-one AI session orchestrator. Supports context-manager protocol (`with WizardAI(...) as wiz:`).
 
-**Chat pipeline priority** (inside `wiz.chat()`):
+The top-level orchestrator that bundles every WizardAI component into a single object. All subsystems — AI client, conversation agent, memory, speech, vision, and plugins — are accessible as attributes.
 
-```
-User input
-    │
-    ├─ 1. Plugin dispatch   → first plugin that returns non-None
-    ├─ 2. Pattern matching  → ConversationAgent rules
-    └─ 3. LLM fallback      → Sagittarius Labs API
-```
+### `__init__` Parameters
 
----
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `api_key` | `str \| None` | `None` | Sagittarius Labs API key. Falls back to `WIZARDAI_API_KEY` env var. |
+| `model` | `str \| None` | `None` | LLM model override. Default: `sagittarius/deep-vl-r1-128b`. |
+| `max_tokens` | `int` | `1024` | Default maximum tokens for LLM responses. |
+| `temperature` | `float` | `0.7` | Default sampling temperature (0 = deterministic). |
+| `enable_vision` | `bool` | `False` | Open webcam on `start()`. Requires `opencv-python`. |
+| `camera_device` | `int` | `0` | OpenCV camera device index. |
+| `camera_width` | `int` | `640` | Capture width in pixels. |
+| `camera_height` | `int` | `480` | Capture height in pixels. |
+| `enable_speech` | `bool` | `False` | Initialise STT/TTS on `start()`. |
+| `stt_backend` | `str` | `'google'` | `'google'` \| `'sphinx'` \| `'whisper'` |
+| `tts_backend` | `str` | `'pyttsx3'` | `'pyttsx3'` \| `'gtts'` \| `'elevenlabs'` |
+| `language` | `str` | `'en-US'` | BCP-47 language code. |
+| `agent_name` | `str` | `'WizardBot'` | Display name of the conversation agent. |
+| `fallback_response` | `str` | — | Response text when no pattern matches and LLM is unavailable. |
+| `max_history` | `int` | `50` | Sliding window size for conversation memory. |
+| `memory_path` | `str \| None` | `None` | Path for persistent memory JSON file. |
+| `system_prompt` | `str \| None` | `None` | Default system prompt prepended to every LLM call. |
+| `log_level` | `str` | `'INFO'` | `'DEBUG'` \| `'INFO'` \| `'WARNING'` \| `'ERROR'` |
+| `log_file` | `str \| None` | `None` | Optional path to write logs to disk. |
+| `data_dir` | `str` | `'./wizardai_data'` | Working directory for data persistence. |
 
-## 5. WizardAI Core
+### Attributes
 
-### Constructor
+| Attribute | Type | Description |
+|---|---|---|
+| `ai` | `AIClient` | Direct access to the Sagittarius Labs AI client. |
+| `agent` | `ConversationAgent` | Pattern-matched conversation engine. |
+| `memory` | `MemoryManager` | Conversation history and long-term memory. |
+| `plugins` | `PluginManager` | Plugin registry and dispatcher. |
+| `vision` | `VisionModule \| None` | Camera module (None if not enabled). |
+| `speech` | `SpeechModule \| None` | Speech module (None if not enabled). |
+| `files` | `FileHelper` | File I/O utilities rooted at `data_dir`. |
+| `serializer` | `DataSerializer` | JSON / pickle serialization helpers. |
 
-```python
-WizardAI(
-    api_key=None,              # str — or set WIZARDAI_API_KEY env var
-                               #       Get one at https://sagittarius-labs.pages.dev/
-    model=None,                # str — override default model
-    max_tokens=1024,           # int
-    temperature=0.7,           # float
+### Methods
 
-    enable_vision=False,       # bool — open webcam on start()
-    camera_device=0,           # int  — OpenCV device index
-    camera_width=640,          # int
-    camera_height=480,         # int
+**`start()` → `None`**
+Open camera, initialise speech, call `on_start()` on all plugins. Must be called before `chat()` or `ask()` if using vision/speech.
 
-    enable_speech=False,       # bool
-    stt_backend="google",      # "google" | "sphinx" | "whisper"
-    tts_backend="pyttsx3",     # "pyttsx3" | "gtts" | "elevenlabs"
-    language="en-US",          # BCP-47 language code
+**`stop()` → `None`**
+Release camera, stop listening threads, save memory, and call `on_stop()` on all plugins.
 
-    agent_name="WizardBot",
-    fallback_response="I'm not sure how to respond to that.",
+**`chat(user_input: str)` → `str`**
+Full pipeline: plugins → pattern matching → LLM fallback. Returns response string. All messages are logged to memory.
 
-    max_history=50,            # conversation window size
-    memory_path=None,          # auto-save path (JSON)
+**`ask(prompt, model=None, max_tokens=None, temperature=None, system_prompt=None, include_history=True, image_b64=None)` → `str`**
+Bypass pattern matching and send directly to the LLM. Optionally pass a base64 image for multimodal queries. Returns generated text string.
 
-    system_prompt=None,        # default LLM system prompt
-    log_level="INFO",          # "DEBUG"|"INFO"|"WARNING"|"ERROR"
-    log_file=None,             # optional log file path
-    data_dir="./wizardai_data",# working directory
-)
-```
+**`ask_raw(prompt: str, **kwargs)` → `AIResponse`**
+Like `ask()` but returns the full `AIResponse` dataclass including token usage and latency.
 
-### Session lifecycle
+**`listen(timeout=5.0)` → `str | None`**
+Capture and transcribe speech from the microphone. Returns transcribed text or `None` on failure. Requires `enable_speech=True`.
 
-```python
-wiz.start()   # opens camera, init speech, calls plugin.on_start()
-wiz.stop()    # stops all modules, saves memory, calls plugin.on_stop()
+**`say(text: str, blocking=True)` → `None`**
+Speak text aloud using the configured TTS engine. Requires `enable_speech=True`.
 
-with WizardAI(api_key="...") as wiz:
-    ...       # auto start/stop
-```
+**`voice_chat(timeout=5.0)` → `str | None`**
+Listen → process through `chat()` → speak response back. Full voice loop in one call.
 
-### Chat methods
+**`capture()` → `ndarray | None`**
+Capture and return a single BGR frame from the camera. Requires `enable_vision=True`.
 
-| Method | Description |
-|--------|-------------|
-| `wiz.chat(text)` | Full pipeline: plugins → patterns → LLM |
-| `wiz.ask(prompt, **kwargs)` | Direct LLM call |
-| `wiz.ask_raw(prompt)` | Returns full `AIResponse` object |
+**`snapshot(path='snapshot.jpg')` → `Path | None`**
+Capture a frame and save it to disk. Returns the `Path` of the saved file.
 
-```python
-# Basic chat
-reply = wiz.chat("hello world")
+**`remember(key: str, value: Any)` → `None`**
+Store a fact in long-term persistent memory.
 
-# Ask with options
-reply = wiz.ask(
-    "Summarise this.",
-    max_tokens=300,
-    temperature=0.3,
-    system_prompt="You are a concise summariser.",
-    include_history=False,     # don't send conversation history
-    image_b64=b64_string,      # for multimodal requests
-)
-```
+**`recall(key: str, default=None)` → `Any`**
+Retrieve a fact from long-term memory. Returns `default` if not found.
 
-### Speech shortcuts
+**`get_history(n=10)` → `List[Dict]`**
+Return the last `n` conversation turns as a list of dicts.
 
-```python
-text  = wiz.listen(timeout=5.0)
-wiz.say("Hello!")
-reply = wiz.voice_chat(timeout=5.0)   # listen + chat + speak
-```
+**`add_plugin(plugin_cls, config=None)` → `PluginBase`**
+Register a plugin class with the plugin manager.
 
-### Vision shortcuts
+**`load_plugins_from_dir(directory)` → `List[PluginBase]`**
+Auto-discover and load all plugin Python files from a directory.
 
-```python
-frame = wiz.capture()
-path  = wiz.snapshot("photo.jpg")
-```
+**`set_system_prompt(prompt: str)` → `None`**
+Update the default system prompt for all future LLM calls.
 
-### Memory shortcuts
+**`set_model(model: str)` → `None`**
+Switch the active model at runtime.
 
-```python
-wiz.remember("key", value)
-value   = wiz.recall("key", default=None)
-history = wiz.get_history(n=10)
-```
+**`set_api_key(api_key: str)` → `None`**
+Update the API key at runtime without recreating the client.
 
-### Configuration helpers
-
-```python
-wiz.set_system_prompt("You are a pirate.")
-wiz.set_model("sagittarius/deep-vl-r1-128b")
-wiz.set_api_key("new_key")
-```
+**`run_repl(prompt_str='You: ', quit_commands=None, voice_mode=False)` → `None`**
+Start an interactive REPL in the terminal. Handles Ctrl+C gracefully. Set `voice_mode=True` to use voice I/O instead of keyboard.
 
 ---
 
-## 6. AIClient
+## AIClient
 
-All AI calls go through the **Sagittarius Labs API** at
-`https://sagittarius-labs.pages.dev/api/chat`.
+**Class** — Low-level HTTP client for the Sagittarius Labs API. Handles authentication, rate limiting, streaming, and automatic retries.
 
-If authentication fails, a helpful error message directs you to
-[https://sagittarius-labs.pages.dev/](https://sagittarius-labs.pages.dev/) to get or verify your key.
+> 📡 **Endpoint:** All requests go to `https://sagittarius-labs.pages.dev/api/chat` using model `sagittarius/deep-vl-r1-128b`.
 
-### Constructor
+### `__init__` Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `api_key` | `str \| None` | `None` | API key. Falls back to `WIZARDAI_API_KEY` env var. |
+| `model` | `str` | `sagittarius/deep-vl-r1-128b` | Default model identifier. |
+| `max_retries` | `int` | `3` | Retry attempts on transient errors. |
+| `retry_delay` | `float` | `1.0` | Initial retry delay in seconds (doubles each attempt). |
+| `timeout` | `float` | `60.0` | HTTP request timeout in seconds. |
+| `rate_limit_calls` | `int` | `60` | Max API calls per window. |
+| `rate_limit_period` | `float` | `60.0` | Rate-limit window in seconds. |
+| `logger` | `Logger \| None` | `None` | Optional Logger instance. |
+
+### Methods
+
+**`chat(messages, model=None, max_tokens=1024, temperature=0.7, system_prompt=None, **kwargs)` → `AIResponse`**
+Multi-turn chat (non-streaming). `messages` is a list of `{"role": ..., "content": ...}` dicts. Retries on transient errors automatically.
+
+**`chat_stream(messages, model=None, max_tokens=1024, temperature=0.7, system_prompt=None)` → `Generator[str]`**
+Multi-turn streaming — yields text chunks as they arrive from the API. Use `for chunk in client.chat_stream(...): print(chunk, end="")`.
+
+**`complete(prompt: str, **kwargs)` → `AIResponse`**
+Single-turn convenience wrapper — pass a plain string, get an `AIResponse` back.
+
+**`complete_stream(prompt: str, **kwargs)` → `Generator[str]`**
+Single-turn streaming convenience wrapper.
+
+**`set_api_key(api_key: str)` → `None`**
+Update the API key at runtime.
+
+**`set_model(model: str)` → `None`**
+Change the default model.
+
+### Example — Streaming
 
 ```python
 from wizardai import AIClient
 
-client = AIClient(
-    api_key="YOUR_KEY",       # or set WIZARDAI_API_KEY
-    model="sagittarius/deep-vl-r1-128b",
-    max_retries=3,
-    retry_delay=1.0,
-    timeout=60.0,
-    rate_limit_calls=60,
-    rate_limit_period=60.0,
-)
-```
+client = AIClient(api_key="YOUR_KEY")
 
-### AIResponse
-
-```python
-response.text        # str  — generated text
-response.model       # str  — model used
-response.usage       # dict — token stats
-response.raw         # dict — raw API response
-response.latency_ms  # float — round-trip time in ms
-str(response)        # same as response.text
-```
-
-### Methods
-
-```python
 # Non-streaming
-response = client.complete("Write a haiku.")
-print(response.text)
+resp = client.complete("Explain quantum entanglement simply.")
+print(resp.text)
+print(f"Tokens used: {resp.usage}")
+print(f"Latency: {resp.latency_ms:.0f}ms")
+
+# Streaming
+for chunk in client.complete_stream("Tell me a story"):
+    print(chunk, end="", flush=True)
 
 # Multi-turn chat
 messages = [
     {"role": "user",      "content": "My name is Alice."},
     {"role": "assistant", "content": "Nice to meet you, Alice!"},
-    {"role": "user",      "content": "What is my name?"},
+    {"role": "user",      "content": "What's my name?"},
 ]
-response = client.chat(messages, system_prompt="You are helpful.")
-print(response.text)   # "Your name is Alice."
-
-# Streaming
-for chunk in client.chat_stream(messages):
-    print(chunk, end="", flush=True)
-
-# Single-turn streaming
-for chunk in client.complete_stream("Tell me a story."):
-    print(chunk, end="", flush=True)
-
-# Runtime changes
-client.set_api_key("new_key")
-client.set_model("sagittarius/deep-vl-r1-128b")
+resp = client.chat(messages, system_prompt="You are a friendly assistant.")
+print(resp.text)  # → Your name is Alice.
 ```
 
 ---
 
-## 7. ConversationAgent
+## AIResponse
 
-AIML-style rule engine with wildcards, priorities, context, and callable templates.
+**Dataclass** — Structured response returned by `AIClient.chat()` and `AIClient.complete()`. Supports `str(response)` which returns `response.text`.
 
-### Wildcard syntax
+| Field | Type | Description |
+|---|---|---|
+| `text` | `str` | Generated text content from the model. |
+| `model` | `str` | Model identifier that produced the response. |
+| `usage` | `Dict[str, int]` | Token usage stats: `prompt_tokens`, `completion_tokens`, `total_tokens`. |
+| `raw` | `Dict[str, Any]` | Full raw JSON response from the API. |
+| `latency_ms` | `float` | Round-trip HTTP latency in milliseconds. |
 
-| Wildcard | Matches | Example |
-|----------|---------|---------|
-| `*` | One or more words | `"tell me about *"` |
-| `?` | Exactly one word | `"is ? available"` |
-| `{name}` | Named capture group | `"weather in {city}"` |
+---
 
-### Adding patterns
+## ConversationAgent
+
+**Class** — AIML-style rule-based chat engine. Matches user input against registered patterns using wildcards and named capture groups. Falls back to a default message when no pattern matches.
+
+### `__init__` Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | `str` | `'WizardBot'` | Agent display name. |
+| `fallback` | `str` | — | Response when no pattern matches. |
+| `memory` | `MemoryManager \| None` | `None` | Shared memory manager. |
+| `logger` | `Logger \| None` | `None` | Optional logger. |
+| `case_sensitive` | `bool` | `False` | Whether pattern matching is case-sensitive. |
+
+### Pattern Wildcards
+
+| Wildcard | Matches | Template Ref |
+|---|---|---|
+| `*` | One or more words (greedy) | `{wildcard}` or `{0}` |
+| `?` | Exactly one word | `{0}` |
+| `{name}` | Named capture group | `{name}` |
+
+### Methods
+
+**`add_pattern(pattern, template, priority=0, context=None, tags=None)` → `Pattern`**
+Register a pattern rule. `template` can be a string, callable, or list of alternatives (random pick). Higher `priority` matches first.
+
+**`respond(user_input: str)` → `str`**
+Process input through all registered patterns and return a response. Runs pre/post processors. Logs to memory.
+
+**`load_patterns_from_dict(rules: Dict)` → `None`**
+Bulk-load patterns from a `{"pattern": "template"}` dict.
+
+**`load_patterns_from_file(path: str)` → `None`**
+Load patterns from a JSON file on disk.
+
+**`add_preprocessor(fn: Callable[[str], str])` → `None`**
+Register a function to transform input text before pattern matching.
+
+**`add_postprocessor(fn: Callable[[str], str])` → `None`**
+Register a function to transform the response text after matching.
+
+**`register_plugin(name: str, handler: Callable)` → `None`**
+Register an inline `!name`-invocable plugin. Users type `!name args` to trigger it.
+
+**`set_context(context: str)` → `None`**
+Set the active context. Only patterns with matching `context` (or none) will fire.
+
+**`search_history(query: str, top_k=5)` → `List[Tuple[Message, float]]`**
+Simple keyword-overlap search over conversation history. Returns `(message, score)` tuples sorted by relevance.
+
+**`reset()` → `None`**
+Clear conversation history and reset the active context.
+
+### Example — Patterns
 
 ```python
-agent = wiz.agent   # or ConversationAgent()
+from wizardai import ConversationAgent
 
-# Simple string
-agent.add_pattern("hello", "Hello there!")
+agent = ConversationAgent(name="MyBot")
 
-# Wildcard substitution
+# Static response
+agent.add_pattern("hello", "Hello! How can I help?")
+
+# Wildcard — {wildcard} contains captured text
 agent.add_pattern("my name is *", "Nice to meet you, {wildcard}!")
 
 # Named capture group
-agent.add_pattern("weather in {city}", "Checking weather for {city}…")
+agent.add_pattern("call me {name}", "Sure, I'll call you {name}.")
 
-# Callable (dynamic)
-import time
-agent.add_pattern("what time is it", lambda: f"It's {time.strftime('%H:%M')}.")
+# Random alternatives
+agent.add_pattern("how are you", ["I'm great!", "Ready to help!", "All good!"])
 
-# Random choice from list
-agent.add_pattern("how are you", [
-    "Doing great!",
-    "Running at 100%!",
-    "Excellent — ready to help!",
-])
+# Callable template
+import datetime
+agent.add_pattern("what time is it", lambda: f"It is {datetime.datetime.now():%H:%M}.")
 
-# Priority (higher = tried first)
-agent.add_pattern("hello world", "Special greeting!", priority=10)
+# Priority — matched before lower-priority rules
+agent.add_pattern("hello *", "Hey {wildcard}!", priority=10)
 
-# Context-aware
-agent.add_pattern("yes", "Proceeding!", context="confirm")
-agent.add_pattern("no",  "Cancelled.",  context="confirm")
-agent.set_context("confirm")
+# Inline plugin (!calc expression)
+agent.register_plugin("calc", lambda args: eval(args))
 
-# Pattern object (full control)
-from wizardai import Pattern
-agent.add_pattern_obj(Pattern(
-    pattern="translate * to {lang}",
-    template="Translating…",
-    priority=5,
-    tags=["language"],
-))
-```
-
-### Using patterns
-
-```python
-print(agent.respond("hello"))             # → "Hello there!"
-print(agent.respond("my name is Bob"))    # → "Nice to meet you, Bob!"
-
-# Bulk load from dict
-agent.load_patterns_from_dict({
-    "ping": "pong",
-    "what version": "WizardAI v2.1.3",
-})
-
-# Load from JSON file
-agent.load_patterns_from_file("patterns.json")
-
-# Manage
-agent.remove_pattern("hello")
-agent.clear_patterns()
-agent.reset()                             # wipe history + context
-
-# Inline plugins (!name args)
-agent.register_plugin("joke", lambda args: "Why so serious?")
-# User types: "!joke" → calls the lambda
-```
-
-### Pre/post processors
-
-```python
-agent.add_preprocessor(lambda t: t.strip().lower())
-agent.add_postprocessor(lambda t: t + " 😊")
+print(agent.respond("hello"))
+print(agent.respond("!calc 3 * 7"))  # → 21
 ```
 
 ---
 
-## 8. MemoryManager
+## Pattern
 
-Short-term sliding-window history and long-term key-value storage.
+**Dataclass** — A single conversation rule registered with `ConversationAgent`.
+
+| Field | Type | Description |
+|---|---|---|
+| `pattern` | `str` | Input pattern string. Supports `*`, `?`, and `{name}` wildcards. |
+| `template` | `str \| Callable \| List[str]` | Response string, callable returning a string, or list of alternatives. |
+| `priority` | `int` | Higher values are matched first. Default: 0. |
+| `context` | `str \| None` | Context key required for this rule to fire. `None` fires in any context. |
+| `tags` | `List[str]` | Arbitrary labels for filtering and introspection. |
+
+---
+
+## MemoryManager
+
+**Class** — Manages both short-term conversation history (sliding window deque) and long-term key-value memory (persisted to JSON). Also provides an ephemeral session context dict.
+
+### `__init__` Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `max_history` | `int` | `50` | Maximum messages kept in sliding window. |
+| `persist_path` | `str \| Path \| None` | `None` | JSON file path for persistence. Auto-saves on every change. |
+| `logger` | `Logger \| None` | `None` | Optional logger. |
+
+### Short-term History
+
+**`add_message(role, content, metadata=None)` → `Message`**
+Add a message to the sliding window. `role`: `'user'` | `'assistant'` | `'system'`.
+
+**`get_history(n=None, role_filter=None)` → `List[Message]`**
+Return messages. Optionally limit to last `n` or filter by role.
+
+**`get_messages_for_api(n=None, include_system=True)` → `List[Dict[str, str]]`**
+Return history formatted as `[{"role":…, "content":…}]` dicts, ready to pass to the API.
+
+**`search_history(query: str, top_k=5)` → `List[Tuple[Message, float]]`**
+Keyword-overlap search over history. Returns `(message, relevance_score)`.
+
+**`last_message(role=None)` → `Message | None`**
+Return the most recent message, optionally filtered by role.
+
+**`clear_history()` → `None`**
+Clear all conversation history from the sliding window.
+
+### Long-term Memory
+
+**`remember(key: str, value: Any)` → `None`**
+Store an arbitrary value. Persisted to JSON immediately if `persist_path` is set.
+
+**`recall(key: str, default=None)` → `Any`**
+Retrieve a stored value by key.
+
+**`forget(key: str)` → `bool`**
+Delete a key from long-term memory. Returns `True` if found and deleted.
+
+**`list_memories()` → `List[str]`**
+Return all stored long-term memory keys.
+
+### Ephemeral Context
+
+**`set_context(key, value)` / `get_context(key, default=None)` / `clear_context()`**
+In-session only key-value store. Not persisted to disk.
+
+### Persistence
+
+**`save(path=None)` / `load(path=None)`**
+Manually save or load from a JSON file. Auto-save occurs on every change when `persist_path` is configured.
+
+---
+
+## Message
+
+**Class** — A single conversation message stored in `MemoryManager`. Supports serialization via `to_dict()` and `Message.from_dict()`.
+
+| Attribute | Type | Description |
+|---|---|---|
+| `role` | `str` | `'user'` \| `'assistant'` \| `'system'` |
+| `content` | `str` | Message text content. |
+| `timestamp` | `float` | Unix timestamp when the message was created. |
+| `metadata` | `Dict[str, Any]` | Arbitrary key-value pairs attached to the message. |
+
+---
+
+## PluginBase
+
+**Abstract Class** — Base class for all WizardAI plugins. Subclass it, implement `on_message()`, set the class attributes, and register with `PluginManager`.
+
+### Class Attributes (override in subclass)
+
+| Attribute | Type | Description |
+|---|---|---|
+| `name` | `str` | Unique plugin identifier. Used as the registry key. |
+| `description` | `str` | Human-readable description. |
+| `version` | `str` | Semantic version string. |
+| `author` | `str` | Author name. |
+| `triggers` | `List[str]` | Informational list of trigger phrases (documentation only). |
+
+### Instance Attributes
+
+| Attribute | Type | Description |
+|---|---|---|
+| `config` | `Dict[str, Any]` | Plugin configuration dict passed at registration. |
+| `logger` | `Logger` | Logger instance for the plugin. |
+| `is_enabled` | `bool` (property) | Whether the plugin is active. |
+
+### Methods to Override
+
+**`on_message(text: str, context: Dict)` → `str | None`** *(Abstract — must implement)*
+Process user text and return a response string, or `None` to pass through to the next plugin/agent.
+
+**`setup()`**
+Called once after `__init__`. Override to initialise resources (database connections, models, etc.).
+
+**`teardown()`**
+Called when the plugin is unregistered. Override to release resources.
+
+**`on_start()` / `on_stop()`**
+Called when the WizardAI session starts/stops.
+
+**`enable()` / `disable()`**
+Enable or disable the plugin. Disabled plugins are skipped by `PluginManager.dispatch()`.
+
+---
+
+## PluginManager
+
+**Class** — Manages plugin lifecycle: registration, dispatch, file/directory loading, and bulk start/stop.
+
+**`register(plugin_cls, config=None, name_override=None)` → `PluginBase`**
+Instantiate and register a `PluginBase` subclass. Raises `PluginError` if already registered.
+
+**`unregister(name: str)` → `bool`**
+Remove a plugin and call its `teardown()`.
+
+**`dispatch(text, context=None)` → `str | None`**
+Pass text to each enabled plugin in registration order. Returns the first non-`None` response.
+
+**`dispatch_all(text, context=None)` → `List[Tuple[str, str]]`**
+Call all enabled plugins and collect every non-`None` response as `(plugin_name, response)`.
+
+**`load_from_file(path, config=None)` → `PluginBase`**
+Dynamically import a `.py` file and register the first `PluginBase` subclass found in it.
+
+**`load_from_directory(directory, config=None)` → `List[PluginBase]`**
+Auto-discover and load all `.py` files in a directory (skipping `_`-prefixed files).
+
+**`get(name: str)` → `PluginBase | None`**
+Retrieve a plugin instance by name.
+
+**`list_plugins(enabled_only=False)` → `List[PluginBase]`**
+Return all (or only enabled) registered plugins.
+
+**`start_all()` / `stop_all()`**
+Call `on_start()` / `on_stop()` on all enabled plugins. Called automatically by `WizardAI.start()` and `stop()`.
+
+---
+
+## Plugin Examples
 
 ```python
-from wizardai import MemoryManager
+from wizardai import PluginBase, PluginManager
+import random
 
-mem = MemoryManager(
-    max_history=50,
-    persist_path="session.json",   # auto-save on every write
-)
+class JokePlugin(PluginBase):
+    name        = "jokes"
+    description = "Tells jokes on demand."
+    version     = "1.0.0"
+    author      = "WizardAI Dev"
+    triggers    = ["joke", "tell me a joke", "make me laugh"]
 
-# Short-term history
-mem.add_message("user",      "Hello!")
-mem.add_message("assistant", "Hi there!")
+    def setup(self):
+        self.jokes = [
+            "Why do Python devs wear glasses? They can't C!",
+            "What's a computer's favourite snack? Microchips.",
+            "Why was the web developer stressed? Too many tabs.",
+        ]
 
-msgs = mem.get_history()               # all Message objects
-msgs = mem.get_history(n=5)            # last 5
-msgs = mem.get_history(role_filter="user")
+    def on_message(self, text, context):
+        text_lower = text.lower()
+        if any(kw in text_lower for kw in self.triggers):
+            return random.choice(self.jokes)
+        return None  # pass to next plugin
 
-api_msgs = mem.get_messages_for_api()  # [{"role": ..., "content": ...}]
-dicts    = mem.get_history_as_dicts()
+# Register and use
+manager = PluginManager()
+manager.register(JokePlugin)
 
-last_msg = mem.last_message()
-last_usr = mem.last_message(role="user")
-results  = mem.search_history("hello", top_k=3)  # [(Message, score)]
-
-mem.clear_history()
-
-# Long-term memory
-mem.remember("user_name", "Alice")
-name = mem.recall("user_name")         # → "Alice"
-mem.forget("user_name")
-keys = mem.list_memories()
-
-# Ephemeral context (not saved to disk)
-mem.set_context("topic", "weather")
-topic = mem.get_context("topic")
-mem.clear_context()
-
-# Persistence
-mem.save()                   # save to persist_path
-mem.save("backup.json")
-mem.load()
-mem.load("backup.json")
+print(manager.dispatch("tell me a joke"))
+print(manager.dispatch("hello there"))  # → None (no match)
 ```
 
 ---
 
-## 9. VisionModule
+## VisionModule
 
-Real-time camera access and image processing using OpenCV.
+**Class** — Real-time camera access and image processing via OpenCV. Requires `pip install opencv-python`. Supports context manager protocol.
 
-**Requires:** `pip install opencv-python`
+> ⚠️ **Optional Dependency:** Requires `opencv-python`. Attempting to use without it raises `VisionError` with install instructions.
+
+### `__init__` Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `device_id` | `int` | `0` | OpenCV camera device index. |
+| `width` | `int` | `640` | Capture width in pixels. |
+| `height` | `int` | `480` | Capture height in pixels. |
+| `fps` | `int` | `30` | Target frames per second for streaming. |
+| `logger` | `Logger \| None` | `None` | Optional logger. |
+
+### Capture Methods
+
+**`open()` / `close()` / `is_open()`**
+Open or release the camera device.
+
+**`capture_frame()` → `ndarray`**
+Capture a single BGR frame. Raises `VisionError` if camera is not open.
+
+**`capture_frames(n, delay=0.0)` → `List[ndarray]`**
+Capture `n` frames with an optional delay between each.
+
+**`save_frame(frame, path, quality=95)` → `Path`**
+Save a frame to disk. JPEG quality 0–100.
+
+**`load_image(path)` → `ndarray`**
+Load an image from disk as a BGR ndarray.
+
+### Image Processing
+
+**`resize_frame(frame, width, height)` / `to_grayscale(frame)` / `to_rgb(frame)` / `flip(frame, axis=1)`**
+Standard image transformations. Return a new ndarray.
+
+**`draw_rectangle(frame, x, y, w, h, colour=(0,255,0), thickness=2)`**
+Draw a coloured rectangle on the frame in-place.
+
+**`draw_text(frame, text, x, y, font_scale=0.7, colour=(0,255,0), thickness=2)`**
+Overlay text on a frame using OpenCV's Hershey Simplex font.
+
+**`encode_to_base64(frame, ext='.jpg')` → `str`**
+Encode a frame as a base64 string. Useful for passing images to the LLM via `ask(image_b64=...)`.
+
+### Face Detection
+
+**`detect_faces(frame, scale_factor=1.1, min_neighbours=5, min_size=(30,30))` → `List[Dict]`**
+Haar cascade face detection. Returns list of `{"x", "y", "w", "h"}` dicts.
+
+**`annotate_faces(frame)` → `Tuple[ndarray, List[Dict]]`**
+Detect faces and draw bounding boxes + labels. Returns the annotated frame and face list.
+
+### Streaming
+
+**`start_stream(callback=None, show_preview=False)`**
+Start a background thread that captures frames and calls registered callbacks. Pass `show_preview=True` to open an OpenCV window; press `q` to quit.
+
+**`add_frame_callback(callback: Callable[[ndarray], None])`**
+Register a function called with each captured frame during streaming.
+
+**`stop_stream()`**
+Stop the background streaming thread.
+
+### Example — Vision
 
 ```python
 from wizardai import VisionModule
 
-cam = VisionModule(device_id=0, width=1280, height=720, fps=30)
-cam.open()
-
-frame = cam.capture_frame()             # → numpy.ndarray (BGR)
-cam.save_frame(frame, "photo.jpg")
-b64   = cam.encode_to_base64(frame)     # for LLM image inputs
-
-# Face detection
-faces = cam.detect_faces(frame)         # [{"x":…, "y":…, "w":…, "h":…}]
-annotated, faces = cam.annotate_faces(frame)  # draws bounding boxes
-
-# Image processing
-gray     = cam.to_grayscale(frame)
-rgb      = cam.to_rgb(frame)
-flipped  = cam.flip(frame)              # horizontal flip by default
-resized  = cam.resize_frame(frame, 320, 240)
-
-# Drawing
-cam.draw_rectangle(frame, x=10, y=10, w=100, h=50, colour=(0,255,0))
-cam.draw_text(frame, "Hello!", x=10, y=80)
-
-# Load from disk
-frame2 = cam.load_image("photo.jpg")
-
-# Streaming
-def on_frame(frame):
-    faces = cam.detect_faces(frame)
-    print(f"{len(faces)} face(s)")
-
-cam.start_stream(callback=on_frame, show_preview=True)
-import time; time.sleep(10)
-cam.stop_stream()
-
-cam.close()
-
-# Context manager
-with VisionModule() as cam:
+# Context-manager usage
+with VisionModule(device_id=0, width=1280, height=720) as cam:
     frame = cam.capture_frame()
+    cam.save_frame(frame, "snapshot.jpg", quality=90)
+
+    # Face detection
+    annotated, faces = cam.annotate_faces(frame)
+    print(f"Found {len(faces)} face(s)")
+    cam.save_frame(annotated, "faces.jpg")
+
+    # Send frame to AI for vision query
+    b64 = cam.encode_to_base64(frame)
+    # wiz.ask("Describe this image", image_b64=b64)
+
+    # Live stream with callback
+    def on_frame(f):
+        _, face_list = cam.annotate_faces(f)
+        if face_list:
+            print("Face detected!")
+
+    cam.start_stream(callback=on_frame, show_preview=True)
 ```
 
 ---
 
-## 10. SpeechModule
+## SpeechModule
 
-Speech recognition (STT) and text-to-speech (TTS).
+**Class** — Speech-to-text (STT) and text-to-speech (TTS) with multiple backends. Supports continuous background listening via a daemon thread.
 
-**Requires:** `pip install SpeechRecognition pyttsx3`
+**STT Backends:** `google` (Google Speech API, online) · `sphinx` (CMU Sphinx, offline) · `whisper` (OpenAI Whisper, offline/GPU)
 
-### STT backends
+**TTS Backends:** `pyttsx3` (local system voice, offline) · `gtts` (Google TTS, online MP3) · `elevenlabs` (ElevenLabs API, premium voices)
 
-| Backend | Type | Package |
-|---------|------|---------|
-| `google` | Online | `SpeechRecognition` |
-| `sphinx` | Offline | `pocketsphinx` |
-| `whisper` | Offline (GPU recommended) | `openai-whisper` |
-
-### TTS backends
-
-| Backend | Type | Package |
-|---------|------|---------|
-| `pyttsx3` | Offline | `pyttsx3` |
-| `gtts` | Online | `gtts`, `pygame` |
-| `elevenlabs` | Online | (requests, set `ELEVENLABS_API_KEY`) |
-
-```python
-from wizardai import SpeechModule
-
-speech = SpeechModule(stt_backend="google", tts_backend="pyttsx3")
-
-# STT
-text = speech.listen(timeout=5.0, phrase_time_limit=15.0)
-text = speech.transcribe_file("audio.wav")
-
-# TTS
-speech.say("Hello, world!")
-speech.say("Processing…", blocking=False)
-speech.synthesise_to_file("Hello!", "output.mp3")
-
-# Voices (pyttsx3)
-voices = speech.list_voices()
-speech.set_tts_voice(voices[0]["id"])
-speech.set_tts_rate(180)
-speech.set_tts_volume(0.8)
-
-# Microphones
-mics = speech.list_microphones()
-text = speech.listen(device_index=mics[0]["index"])
-
-# Continuous listening
-def on_speech(text):
-    print("Heard:", text)
-
-speech.start_continuous_listening(callback=on_speech)
-import time; time.sleep(30)
-speech.stop_continuous_listening()
-```
-
----
-
-## 11. Plugin System
-
-Extend WizardAI with custom skills by subclassing `PluginBase`.
-
-### Creating a plugin
-
-```python
-from wizardai import PluginBase
-from typing import Optional
-
-class WeatherPlugin(PluginBase):
-    name        = "weather"
-    description = "Returns weather for a city."
-    version     = "2.1.3"
-    author      = "You"
-    triggers    = ["weather in *"]
-
-    def setup(self):
-        """Initialise resources once."""
-        self.api_key = self.config.get("api_key", "")
-
-    def teardown(self):
-        """Clean up when unregistered."""
-        pass
-
-    def on_message(self, text: str, context: dict) -> Optional[str]:
-        """Return a response string, or None to pass through."""
-        city = text.split("in", 1)[-1].strip()
-        return f"The weather in {city} is sunny, 25°C."
-
-    def on_start(self): self.logger.info("WeatherPlugin ready.")
-    def on_stop(self):  pass
-```
-
-### Registering plugins
-
-```python
-from wizardai import PluginManager
-
-manager = PluginManager()
-
-# By class
-manager.register(WeatherPlugin, config={"api_key": "..."})
-
-# With name override
-manager.register(WeatherPlugin, name_override="weather_v2")
-
-# From a Python file
-manager.load_from_file("plugins/joke_plugin.py")
-
-# From a directory (all *.py files)
-manager.load_from_directory("./plugins/")
-```
-
-### Dispatching
-
-```python
-# First matching plugin
-response = manager.dispatch("weather in Paris")
-
-# All matching plugins
-results = manager.dispatch_all("hello")
-# → [("plugin_name", "response"), ...]
-```
-
-### Management
-
-```python
-plugin = manager.get("weather")
-plugin.enable()
-plugin.disable()
-print(plugin.is_enabled)
-
-all_plugins     = manager.list_plugins()
-enabled_plugins = manager.list_plugins(enabled_only=True)
-
-manager.unregister("weather")
-
-manager.start_all()
-manager.stop_all()
-
-print(len(manager))   # number of plugins
-```
-
-### Using with WizardAI
-
-```python
-with wizardai.WizardAI(api_key="...") as wiz:
-    wiz.add_plugin(WeatherPlugin, config={"api_key": "..."})
-    print(wiz.chat("weather in Tokyo"))   # → plugin handles it
-```
-
-### Loading from a directory
-
-```
-plugins/
-├── weather_plugin.py   # contains class WeatherPlugin(PluginBase)
-├── joke_plugin.py      # contains class JokePlugin(PluginBase)
-└── crypto_plugin.py
-```
-
-```python
-wiz.load_plugins_from_dir("./plugins/")
-```
-
----
-
-## 12. Utilities
-
-### Logger
-
-```python
-from wizardai import Logger
-
-log = Logger("my_app", level="DEBUG", log_file="app.log", coloured=True)
-log.debug("Trace")
-log.info("Started")
-log.warning("Low memory")
-log.error("Failed")
-log.critical("Fatal!")
-log.set_level("WARNING")
-```
-
-### FileHelper
-
-```python
-from wizardai import FileHelper
-
-fh = FileHelper(base_dir="./data")
-fh.ensure_dir("models/cache")
-
-fh.write_text("note.txt", "Hello!")
-text = fh.read_text("note.txt")
-lines = fh.read_lines("note.txt")
-
-fh.write_json("config.json", {"key": "val"})
-cfg = fh.read_json("config.json")
-
-fh.write_csv("data.csv", [{"a": 1, "b": 2}])
-rows = fh.read_csv("data.csv")
-
-fh.copy("src.txt", "dst.txt")
-fh.delete("old.txt")
-files = fh.list_files(pattern="*.json", recursive=True)
-name  = fh.timestamp_filename("log", ".txt")  # "log_20260101_120000.txt"
-```
-
-### DataSerializer
-
-```python
-from wizardai import DataSerializer
-
-ds = DataSerializer()
-ds.save({"key": "val"}, "data.json")
-ds.save(large_object,   "data.pkl.gz", compress=True)
-data = ds.load("data.json")
-
-json_str = ds.to_json_string({"a": 1})
-data     = ds.from_json_string(json_str)
-
-for record in ds.iter_jsonl("records.jsonl"):
-    print(record)
-
-ds.write_jsonl("out.jsonl", [{"a": 1}, {"b": 2}])
-```
-
-### RateLimiter
-
-```python
-from wizardai import RateLimiter
-
-limiter = RateLimiter(max_calls=10, period=60.0)
-
-# Block until a token is available
-limiter.wait()
-make_api_call()
-
-# Non-blocking check
-if limiter.is_allowed():
-    make_api_call()
-
-# Context manager
-with limiter:
-    make_api_call()
-```
-
----
-
-## 13. Exceptions & Error Handling
-
-### Exception hierarchy
-
-```
-WizardAIError
-├── APIError
-│   ├── AuthenticationError   ← invalid/missing API key
-│   └── RateLimitError        ← 429 too many requests
-├── VisionError
-│   └── CameraNotFoundError
-├── SpeechError
-│   └── MicrophoneNotFoundError
-├── ConversationError
-├── PluginError
-└── ConfigurationError
-```
-
-### Recommended pattern
-
-```python
-import wizardai
-from wizardai import (
-    AuthenticationError,
-    RateLimitError,
-    APIError,
-    WizardAIError,
-    CameraNotFoundError,
-    MicrophoneNotFoundError,
-)
-import time
-
-try:
-    with wizardai.WizardAI(api_key="YOUR_KEY") as wiz:
-        reply = wiz.ask("Hello!")
-        print(reply)
-
-except AuthenticationError as e:
-    # Printed message includes a link to https://sagittarius-labs.pages.dev/
-    print(e)
-
-except RateLimitError as e:
-    wait = e.retry_after or 60
-    print(f"Rate limited. Waiting {wait}s…")
-    time.sleep(wait)
-
-except APIError as e:
-    print(f"API error {e.code}: {e.message}")
-
-except WizardAIError as e:
-    print(f"WizardAI error: {e}")
-```
-
-### Authentication errors
-
-When your API key is wrong or missing, you will see:
-
-```
-AuthenticationError: Authentication failed — your API key is missing or invalid.
-  Detail  : HTTP 401 from https://sagittarius-labs.pages.dev/api/chat. Verify your key.
-  Fix     : Get or verify your key at https://sagittarius-labs.pages.dev/
-  Env var : export WIZARDAI_API_KEY=<your_key>
-```
-
-### Retry helper
-
-```python
-def ask_with_retry(wiz, prompt, max_attempts=3):
-    for attempt in range(max_attempts):
-        try:
-            return wiz.ask(prompt)
-        except RateLimitError as e:
-            wait = e.retry_after or (2 ** attempt)
-            print(f"Rate limited, retrying in {wait}s…")
-            time.sleep(wait)
-    raise RuntimeError("Max retries exceeded")
-```
-
----
-
-## 14. Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `WIZARDAI_API_KEY` | Your Sagittarius Labs API key |
-| `ELEVENLABS_API_KEY` | ElevenLabs TTS API key (optional) |
-
-```bash
-export WIZARDAI_API_KEY="your_key_here"
-export ELEVENLABS_API_KEY="your_elevenlabs_key"
-```
-
----
-
-## 15. Configuration Reference
-
-### WizardAI constructor
+### `__init__` Parameters
 
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `api_key` | `str` | `None` | Sagittarius Labs API key |
-| `model` | `str` | `sagittarius/deep-vl-r1-128b` | Model identifier |
-| `max_tokens` | `int` | `1024` | Max tokens per response |
-| `temperature` | `float` | `0.7` | Sampling temperature |
-| `enable_vision` | `bool` | `False` | Open webcam on start |
-| `camera_device` | `int` | `0` | OpenCV camera index |
-| `camera_width` | `int` | `640` | Capture width |
-| `camera_height` | `int` | `480` | Capture height |
-| `enable_speech` | `bool` | `False` | Init STT/TTS on start |
-| `stt_backend` | `str` | `"google"` | STT engine |
-| `tts_backend` | `str` | `"pyttsx3"` | TTS engine |
-| `language` | `str` | `"en-US"` | BCP-47 language code |
-| `agent_name` | `str` | `"WizardBot"` | Agent display name |
-| `fallback_response` | `str` | `"I'm not sure…"` | Pattern-match fallback |
-| `max_history` | `int` | `50` | Conversation window |
-| `memory_path` | `str` | `None` | Persistent memory path |
-| `system_prompt` | `str` | `None` | Default system prompt |
-| `log_level` | `str` | `"INFO"` | Log verbosity |
-| `log_file` | `str` | `None` | Log file path |
-| `data_dir` | `str` | `"./wizardai_data"` | Working directory |
+|---|---|---|---|
+| `stt_backend` | `str` | `'google'` | STT backend: `'google'` \| `'sphinx'` \| `'whisper'` |
+| `tts_backend` | `str` | `'pyttsx3'` | TTS backend: `'pyttsx3'` \| `'gtts'` \| `'elevenlabs'` |
+| `language` | `str` | `'en-US'` | BCP-47 language code. |
+| `tts_rate` | `int` | `150` | Speech rate (words per minute) for pyttsx3. |
+| `tts_volume` | `float` | `1.0` | Volume (0.0–1.0) for pyttsx3. |
+| `elevenlabs_api_key` | `str \| None` | `None` | ElevenLabs API key (falls back to `ELEVENLABS_API_KEY` env var). |
+| `elevenlabs_voice_id` | `str \| None` | `'21m00…'` | ElevenLabs voice ID. |
 
-### AIClient constructor
+### STT Methods
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `api_key` | `str` | `None` | API key (env fallback) |
-| `model` | `str` | `sagittarius/deep-vl-r1-128b` | Default model |
-| `max_retries` | `int` | `3` | Retry attempts |
-| `retry_delay` | `float` | `1.0` | Initial retry delay |
-| `timeout` | `float` | `60.0` | HTTP timeout |
-| `rate_limit_calls` | `int` | `60` | Calls per window |
-| `rate_limit_period` | `float` | `60.0` | Window in seconds |
+**`listen(timeout=5.0, phrase_time_limit=15.0, adjust_noise=True, device_index=None)` → `str`**
+Capture audio from microphone and return transcribed text. Raises `SpeechError` on failure.
 
----
+**`transcribe_file(path)` → `str`**
+Transcribe a pre-recorded audio file.
 
-## 16. Advanced Usage
+**`list_microphones()` → `List[Dict]`**
+Return all available microphone devices as `{"index", "name"}` dicts.
 
-### Multimodal (image + text)
+### TTS Methods
 
-```python
-with wizardai.WizardAI(api_key="...", enable_vision=True) as wiz:
-    frame = wiz.capture()
-    b64   = wiz.vision.encode_to_base64(frame)
-    reply = wiz.ask("What do you see in this image?", image_b64=b64)
-    print(reply)
-```
+**`say(text: str, blocking=True)` → `str | None`**
+Speak text aloud. For file-based backends (gTTS, ElevenLabs) returns the temp file path.
 
-### Voice assistant loop
+**`synthesise_to_file(text, path)` → `Path`**
+Synthesise speech and save to an audio file without playing it.
+
+**`set_tts_rate(rate: int)` / `set_tts_volume(volume: float)` / `set_tts_voice(voice_id: str)`**
+Adjust pyttsx3 TTS properties at runtime.
+
+**`list_voices()` → `List[Dict]`**
+Return available pyttsx3 voice IDs and names.
+
+### Continuous Listening
+
+**`start_continuous_listening(callback=None, timeout=None, phrase_time_limit=10.0)`**
+Start a background daemon thread that continuously listens and calls registered callbacks with transcribed text.
+
+**`add_listener(callback: Callable[[str], None])`**
+Register a callback invoked with every transcribed utterance during continuous listening.
+
+**`stop_continuous_listening()`**
+Stop the background listening thread.
+
+### Example — Voice Assistant Loop
 
 ```python
-with wizardai.WizardAI(
-    api_key="...",
+from wizardai import WizardAI
+
+wiz = WizardAI(
+    api_key="YOUR_KEY",
     enable_speech=True,
-    stt_backend="whisper",
+    stt_backend="google",
     tts_backend="pyttsx3",
-) as wiz:
-    wiz.say("Hello! I'm WizardAI. How can I help?")
-    while True:
-        reply = wiz.voice_chat(timeout=8)
-        if reply and "goodbye" in reply.lower():
-            break
-```
-
-### Streaming response
-
-```python
-client = wizardai.AIClient(api_key="...")
-print("Bot: ", end="", flush=True)
-for chunk in client.chat_stream([{"role": "user", "content": "Write a poem"}]):
-    print(chunk, end="", flush=True)
-print()
-```
-
-### Persistent session with memory
-
-```python
-wiz = wizardai.WizardAI(
-    api_key="...",
-    memory_path="session.json",   # auto-saves after every message
+    language="en-US",
 )
 wiz.start()
 
-wiz.remember("user_name", "Alice")
+# Single voice exchange
+response = wiz.voice_chat(timeout=8.0)
+print(f"Bot said: {response}")
 
-# Memory survives restarts — loaded from disk automatically next time
-name = wiz.recall("user_name")    # → "Alice" even after restarting
+# Continuous background listener
+def handle_speech(text):
+    reply = wiz.chat(text)
+    wiz.say(reply)
+
+wiz.speech.start_continuous_listening(callback=handle_speech)
+# ... your app logic ...
+wiz.speech.stop_continuous_listening()
+wiz.stop()
 ```
 
-### Custom plugin with live API
+---
+
+## Logger
+
+**Class** — Configurable coloured terminal logger backed by Python's `logging` module. Optionally writes to a log file.
+
+### `__init__` Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `name` | `str` | `'wizardai'` | Logger name (appears in output). |
+| `level` | `str` | `'INFO'` | `'DEBUG'` \| `'INFO'` \| `'WARNING'` \| `'ERROR'` \| `'CRITICAL'` |
+| `log_file` | `str \| None` | `None` | Optional file path to mirror logs. |
+| `coloured` | `bool` | `True` | ANSI colour coding in terminal. |
+
+**Methods:** `debug(msg)` · `info(msg)` · `warning(msg)` · `error(msg)` · `critical(msg)` · `set_level(level)`
 
 ```python
-import requests as _req
-from wizardai import PluginBase
+log = wizardai.Logger("my_app", level="DEBUG", log_file="app.log")
+log.info("Session started")
+log.warning("Memory usage high")
+log.error("Connection failed")
+log.set_level("WARNING")
+```
 
-class CryptoPlugin(PluginBase):
-    name    = "crypto"
-    version = "2.1.3"
-    triggers = ["price of *", "* price"]
+---
+
+## FileHelper
+
+**Class** — High-level file I/O rooted at a `base_dir`. All paths are resolved relative to `base_dir` unless absolute.
+
+| Method | Signature | Description |
+|---|---|---|
+| `write_text` | `(path, content, encoding='utf-8', append=False) → Path` | Write a string to a text file. |
+| `read_text` | `(path, encoding='utf-8') → str` | Read a text file to a string. |
+| `read_lines` | `(path, strip=True) → List[str]` | Read all lines, optionally stripping whitespace. |
+| `write_json` | `(path, data, indent=2) → Path` | Serialize data to a JSON file. |
+| `read_json` | `(path) → Any` | Parse a JSON file and return the object. |
+| `write_csv` | `(path, rows, fieldnames=None) → Path` | Write a list of dicts to a CSV file. |
+| `read_csv` | `(path) → List[Dict]` | Read a CSV file as a list of dicts. |
+| `copy` | `(src, dst) → Path` | Copy a file. |
+| `delete` | `(path) → bool` | Delete a file. Returns `True` if it existed. |
+| `list_files` | `(directory='.', pattern='*', recursive=False) → List[Path]` | List files matching a glob pattern. |
+| `timestamp_filename` | `(name, ext='') → str` | Generate a timestamped filename like `name_20250101_120000.ext`. |
+| `resolve` | `(path) → Path` | Resolve a path relative to `base_dir`. |
+| `ensure_dir` | `(path) → Path` | Create a directory (including parents) if it doesn't exist. |
+
+---
+
+## DataSerializer
+
+**Class** — Serialize/deserialize Python objects to JSON, Pickle, or gzip-compressed variants. Format auto-detected from file extension.
+
+| Method | Signature | Description |
+|---|---|---|
+| `save` | `(data, path, compress=False, indent=2) → Path` | Save data. Format from extension: `.json` / `.json.gz` / `.pkl` / `.pkl.gz` |
+| `load` | `(path) → Any` | Load data. Format auto-detected from extension. |
+| `to_json_string` | `(data, indent=2) → str` | Serialize to a JSON string. |
+| `from_json_string` | `(text) → Any` | Deserialize from a JSON string. |
+| `iter_jsonl` | `(path) → Iterator[Any]` | Iterate over records in a JSON-Lines file. |
+| `write_jsonl` | `(path, records) → Path` | Write a list of objects as a JSON-Lines file. |
+
+---
+
+## RateLimiter
+
+**Class** — Token-bucket rate limiter. Supports context-manager protocol. Used internally by `AIClient`.
+
+### `__init__` Parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `max_calls` | `int` | `60` | Maximum calls allowed per window. |
+| `period` | `float` | `60.0` | Sliding window duration in seconds. |
+
+**`wait()`**
+Block until a slot is available in the current window. Call before every rate-limited operation.
+
+**`is_allowed()` → `bool`**
+Return `True` if a call can be made immediately without waiting.
+
+```python
+limiter = wizardai.RateLimiter(max_calls=10, period=60)
+
+for item in large_list:
+    limiter.wait()  # blocks if needed
+    process(item)
+
+# Context-manager style
+with limiter:
+    api_call()
+```
+
+---
+
+## Exceptions
+
+All WizardAI exceptions inherit from `WizardAIError` which has a `message` attribute and an optional HTTP `code`.
+
+| Exception | Parent | Description |
+|---|---|---|
+| `WizardAIError` | `Exception` | Base exception for all WizardAI errors. Has `.message` and `.code` attributes. |
+| `APIError` | `WizardAIError` | Raised when an AI API call fails. Includes HTTP status code. |
+| `AuthenticationError` | `APIError` | API key is missing or invalid. Includes URL to obtain/verify key. Never retried. |
+| `RateLimitError` | `APIError` | Rate limit exceeded (HTTP 429). Has `.retry_after` float in seconds. |
+| `VisionError` | `WizardAIError` | Camera or image processing failure. |
+| `CameraNotFoundError` | `VisionError` | Camera device index not found. Has `.device_id` attribute. |
+| `SpeechError` | `WizardAIError` | Speech recognition or TTS failure. |
+| `MicrophoneNotFoundError` | `SpeechError` | No microphone device detected. |
+| `ConversationError` | `WizardAIError` | Conversation engine internal error. |
+| `PluginError` | `WizardAIError` | Plugin load or execution failure. Has `.plugin_name` attribute. |
+| `ConfigurationError` | `WizardAIError` | SDK misconfiguration detected. |
+
+### Error Handling Pattern
+
+```python
+from wizardai import WizardAI, AuthenticationError, RateLimitError, APIError
+
+try:
+    response = wiz.ask("Hello")
+except AuthenticationError as e:
+    print(f"Auth failed: {e.message}")
+    print("→ Visit https://sagittarius-labs.pages.dev/ for a key")
+except RateLimitError as e:
+    print(f"Rate limited. Retry after {e.retry_after}s")
+except APIError as e:
+    print(f"API error {e.code}: {e.message}")
+except Exception as e:
+    print(f"Unexpected: {e}")
+```
+
+---
+
+## Constants & Metadata
+
+| Name | Value | Description |
+|---|---|---|
+| `__version__` | `'1.0.0'` | SDK version string. |
+| `__author__` | `'WizardAI Contributors'` | Author(s). |
+| `__license__` | `'MIT'` | License identifier. |
+| `_BASE_URL` | `'https://sagittarius-labs.pages.dev'` | Sagittarius Labs base URL. |
+| `_ENDPOINT` | `'https://sagittarius-labs.pages.dev/api/chat'` | API chat endpoint. |
+| `_MODEL` | `'sagittarius/deep-vl-r1-128b'` | Default model identifier. |
+| `_SIGNUP_URL` | `'https://sagittarius-labs.pages.dev'` | URL to obtain an API key. |
+| `_ENV_KEY` | `'WIZARDAI_API_KEY'` | Environment variable name for the API key. |
+
+---
+
+## Full Examples
+
+### 1. Interactive Terminal REPL
+
+```python
+import wizardai
+
+wiz = wizardai.WizardAI(
+    api_key="YOUR_KEY",
+    agent_name="Sage",
+    system_prompt="You are Sage, a wise and helpful AI assistant.",
+    memory_path="./session_memory.json",
+    log_level="WARNING",
+)
+wiz.start()
+wiz.run_repl(prompt_str="You: ", quit_commands=["quit", "/q", "exit"])
+```
+
+### 2. Multimodal Vision + AI
+
+```python
+import wizardai
+
+with wizardai.WizardAI(api_key="YOUR_KEY", enable_vision=True) as wiz:
+    frame = wiz.capture()
+    b64   = wiz.vision.encode_to_base64(frame)
+    answer = wiz.ask("Describe what you see in this image.", image_b64=b64)
+    print(answer)
+    wiz.snapshot("./captured.jpg")
+```
+
+### 3. Memory-Aware Chatbot
+
+```python
+import wizardai
+
+wiz = wizardai.WizardAI(api_key="YOUR_KEY", memory_path="./memory.json")
+wiz.start()
+
+# Store facts
+wiz.remember("user_name", "Alice")
+wiz.remember("user_city", "London")
+wiz.remember("preferences", {"lang": "en", "theme": "dark"})
+
+# Recall later
+name = wiz.recall("user_name")  # → 'Alice'
+wiz.agent.add_pattern(
+    "what is my name",
+    f"Your name is {name}.",
+)
+print(wiz.chat("what is my name"))  # → Your name is Alice.
+
+# Search history
+results = wiz.memory.search_history("name", top_k=3)
+for msg, score in results:
+    print(f"[{score:.2f}] {msg.role}: {msg.content[:50]}")
+
+wiz.stop()
+```
+
+### 4. Plugin System — Complete Example
+
+```python
+import wizardai
+import datetime
+
+class TimePlugin(wizardai.PluginBase):
+    name        = "time"
+    description = "Returns current time and date."
+    version     = "1.0.0"
+    triggers    = ["time", "date", "what time"]
 
     def on_message(self, text, context):
-        coin = text.split()[-1].upper()
-        try:
-            r = _req.get(
-                "https://api.coingecko.com/api/v3/simple/price",
-                params={"ids": coin.lower(), "vs_currencies": "usd"},
-                timeout=5,
-            )
-            price = r.json().get(coin.lower(), {}).get("usd", "unknown")
-            return f"{coin} is currently ${price} USD."
-        except Exception:
-            return f"Could not fetch price for {coin}."
+        text_l = text.lower()
+        if "time" in text_l or "date" in text_l:
+            now = datetime.datetime.now()
+            return f"It is {now:%A, %B %d %Y} at {now:%H:%M:%S}."
+        return None
 
-with wizardai.WizardAI(api_key="...") as wiz:
-    wiz.add_plugin(CryptoPlugin)
-    print(wiz.chat("bitcoin price"))
+class WeatherPlugin(wizardai.PluginBase):
+    name        = "weather"
+    description = "Stub weather plugin."
+    version     = "1.0.0"
+
+    def on_message(self, text, context):
+        if "weather" in text.lower():
+            return "It's sunny and 22°C. Perfect for coding!"
+        return None
+
+with wizardai.WizardAI(api_key="YOUR_KEY") as wiz:
+    wiz.add_plugin(TimePlugin)
+    wiz.add_plugin(WeatherPlugin)
+
+    print(wiz.chat("what time is it"))     # → TimePlugin
+    print(wiz.chat("what's the weather"))  # → WeatherPlugin
+    print(wiz.chat("explain relativity"))  # → LLM fallback
 ```
 
-### Multiple agents in one app
+### 5. Data Persistence & Serialization
 
 ```python
-from wizardai import ConversationAgent, MemoryManager
+from wizardai import FileHelper, DataSerializer
 
-support_agent = ConversationAgent(name="Support", memory=MemoryManager())
-sales_agent   = ConversationAgent(name="Sales",   memory=MemoryManager())
+fh = FileHelper(base_dir="./data")
+ds = DataSerializer()
 
-support_agent.add_pattern("refund *", "I'll process your refund for {wildcard}.")
-sales_agent.add_pattern("buy *", "Great choice! Here's how to purchase {wildcard}.")
+# Write and read text
+fh.write_text("notes.txt", "WizardAI is awesome!")
+print(fh.read_text("notes.txt"))
 
-def route(text):
-    if "refund" in text.lower():
-        return support_agent.respond(text)
-    return sales_agent.respond(text)
+# Write and read JSON
+fh.write_json("config.json", {"model": "deep-vl", "temp": 0.7})
+cfg = fh.read_json("config.json")
+
+# CSV round-trip
+rows = [{"name": "Alice", "score": 95}, {"name": "Bob", "score": 87}]
+fh.write_csv("scores.csv", rows)
+print(fh.read_csv("scores.csv"))
+
+# Compressed pickle
+ds.save({"big": "data"}, "./cache.pkl.gz")
+data = ds.load("./cache.pkl.gz")
+
+# JSON-Lines
+ds.write_jsonl("./records.jsonl", [{"id": 1}, {"id": 2}])
+for rec in ds.iter_jsonl("./records.jsonl"):
+    print(rec)
+```
+
+### 6. Set WIZARDAI_API_KEY in Windows
+
+**CMD (persistent):**
+```bat
+:: Set permanently for current user (persists after reboot)
+setx WIZARDAI_API_KEY "your_api_key_here"
+
+:: Restart CMD after running setx, then verify
+echo %WIZARDAI_API_KEY%
+```
+
+**PowerShell (persistent):**
+```powershell
+# Set permanently for current user
+[System.Environment]::SetEnvironmentVariable(
+    "WIZARDAI_API_KEY",
+    "your_api_key_here",
+    "User"
+)
+
+# Verify in a new terminal
+$env:WIZARDAI_API_KEY
+```
+
+**Temporary (session only):**
+```bat
+:: CMD — session only (gone when window closes)
+set WIZARDAI_API_KEY=your_api_key_here
+```
+```powershell
+# PowerShell — session only
+$env:WIZARDAI_API_KEY = "your_api_key_here"
 ```
 
 ---
 
-## 17. Publishing to PyPI
-
-### `pyproject.toml`
-
-```toml
-[build-system]
-requires      = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.build_meta"
-
-[project]
-name            = "wizardai-sdk"
-version         = "2.1.3"
-description     = "All-in-one AI SDK powered by Sagittarius Labs"
-readme          = "README.md"
-license         = { text = "MIT" }
-requires-python = ">=3.9"
-dependencies    = ["requests>=2.28.0"]
-
-[project.optional-dependencies]
-vision  = ["opencv-python>=4.7.0", "numpy>=1.24.0"]
-speech  = ["SpeechRecognition>=3.10.0", "pyttsx3>=2.90", "gtts>=2.3.0", "pygame>=2.4.0"]
-whisper = ["openai-whisper>=20230918", "numpy>=1.24.0"]
-full    = [
-    "opencv-python>=4.7.0", "numpy>=1.24.0",
-    "SpeechRecognition>=3.10.0", "pyttsx3>=2.90",
-    "gtts>=2.3.0", "pygame>=2.4.0",
-    "openai-whisper>=20230918",
-]
-dev = ["pytest>=7.0", "black>=23.0", "ruff>=0.1.0", "build>=0.10", "twine>=4.0"]
-```
-
-### `MANIFEST.in`
-
-```
-include wizardai.py
-include README.md
-include LICENSE
-```
-
-### GitHub Actions — `.github/workflows/publish.yml`
-
-```yaml
-name: Publish to PyPI
-
-on:
-  release:
-    types: [published]
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    environment: pypi
-    permissions:
-      id-token: write
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
-
-      - name: Install build tools
-        run: pip install build
-
-      - name: Build package
-        run: python -m build
-
-      - name: Publish to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-```
-
-### Configure PyPI Trusted Publisher
-
-Go to [https://pypi.org/manage/account/publishing/](https://pypi.org/manage/account/publishing/):
-
-| Field | Value |
-|-------|-------|
-| PyPI Project Name | `wizardai-sdk` |
-| Owner | `YourGitHubUsername` |
-| Repository name | `wizardai-sdk` |
-| Workflow name | `publish.yml` |
-| Environment name | `pypi` |
-
-### Create a release and publish
-
-1. Push a tag: `git tag v2.1.3 && git push --tags`
-2. Create a GitHub Release from the tag
-3. The workflow publishes to PyPI automatically
-
-```bash
-pip install wizardai-sdk
-pip install "wizardai-sdk[full]"
-```
-
----
-
-## 18. Contributing
-
-```bash
-# 1. Fork and clone
-git clone https://github.com/YourUsername/wizardai-sdk.git
-cd wizardai-sdk
-
-# 2. Install dev extras
-pip install -e ".[dev,full]"
-
-# 3. Feature branch
-git checkout -b feature/my-feature
-
-# 4. Run tests
-pytest tests/ -v
-
-# 5. Format
-black .
-ruff check .
-
-# 6. Open a Pull Request
-```
-
----
-
-## 19. License
-
-MIT © WizardAI Contributors
-
-```
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions: The above copyright
-notice and this permission notice shall be included in all copies or
-substantial portions of the Software. THE SOFTWARE IS PROVIDED "AS IS",
-WITHOUT WARRANTY OF ANY KIND.
-```
-
----
-
-*WizardEnv v2.1.3 — Powered by [Sagittarius Labs](https://sagittarius-labs.pages.dev/)*
+*WizardAI SDK v1.0.0 · MIT License · [sagittarius-labs.pages.dev](https://sagittarius-labs.pages.dev) · Model: `sagittarius/deep-vl-r1-128b`*
